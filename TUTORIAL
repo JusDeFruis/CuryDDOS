@@ -1,0 +1,673 @@
+# 🔥 CuryDDOS v1 — Tutorial Complet
+
+> 📖 **Guide complet d'installation, configuration et utilisation de CuryDDOS v1**
+
+---
+
+## 📋 Table des matieres
+
+1. [Presentation](#1--presentation)
+2. [Prerequis](#2--prerequis)
+3. [Installation](#3--installation)
+4. [Premier lancement](#4--premier-lancement)
+5. [Interface](#5--interface)
+6. [Configuration de l'attaque](#6--configuration-de-lattaque)
+7. [Les 28 mode d'attaque](#7--les-28-modes-dattaque)
+8. [Stealth System](#8--stealth-system)
+9. [Port Scanner](#9--port-scanner)
+10. [Payload Builder](#10--payload-builder)
+11. [Quick Presets](#11--quick-presets)
+12. [Kill Switch](#12--kill-switch)
+13. [Infiltration Guide](#13--infiltration-guide)
+14. [Report Generator](#14--report-generator)
+15. [Raccourcis clavier](#15--raccourcis-clavier)
+16. [FAQ](#16--faq)
+17. [Resolution de problemes](#17--resolution-de-problemes)
+
+---
+
+## 1. Presentation
+
+### C'est quoi CuryDDOS v1 ?
+
+CuryDDOS v1 est un **outil de stress test reseau** developpe en **C++ natif** avec une interface **ImGui** moderne. Il est concu pour tester la robustesse de vos propres serveurs et reseaux.
+
+### A quoi ca sert ?
+
+| Usage | Description |
+|---|---|
+| 🔴 **Test de charge** | Verifier la capacite de vos serveurs |
+| 🔵 **Audit de securite** | Tester la resilience de votre infrastructure |
+| 🟢 **Apprentissage** | Comprendre les attaques reseau pour mieux les defendre |
+| 🟡 **Recherche** | Etudier les techniques de test de securite |
+
+### Caracteristiques techniques
+
+- **Backend** : C++ natif, Winsock2 raw sockets
+- **Frontend** : ImGui + GLFW + OpenGL3
+- **Taille** : ~1.5 MB (single binary)
+- **DPI-Aware** : Support ecrans 4K/retina
+- **Admin** : Demande elevation UAC au demarrage
+- **Stealth** : Rotation automatique de profils
+
+---
+
+## 2. Prerequis
+
+### Logiciels necessaires
+
+| Logiciel | Version min. | Lien |
+|---|---|---|
+| Windows | 10/11 | - |
+| Visual Studio | 2022+ | [visualstudio.microsoft.com](https://visualstudio.microsoft.com/) |
+| CMake | 3.20+ | [cmake.org](https://cmake.org/) |
+| Git | Derniere version | [git-scm.com](https://git-scm.com/) |
+
+### Installation de Visual Studio
+
+1. Telecharger **Visual Studio Community** depuis le lien ci-dessus
+2. Pendant l'installation, selectionner le workload **"Desktop development with C++"**
+3. Dans les composants supplementaires, verifier :
+   - MSVC v143 - Visual Studio C++ build tools
+   - Windows 10/11 SDK
+   - C++ CMake tools for Windows
+
+### Installation de CMake
+
+1. Telecharger CMake depuis [cmake.org](https://cmake.org/)
+2. Pendant l'installation, selectionner **"Add CMake to the system PATH"**
+
+### Verification
+
+Ouvrir un terminal (PowerShell) et verifier :
+
+```bash
+cmake --version
+git --version
+```
+
+Les deux commandes doivent retourner une version.
+
+---
+
+## 3. Installation
+
+### Methode 1 : Clone Git (recommande)
+
+```bash
+# Cloner le depot
+git clone https://github.com/ton-username/CuryDDOS_v1.git
+
+# Entrer dans le dossier
+cd CuryDDOS_v1
+
+# Lancer le build automatique
+build.bat
+```
+
+### Methode 2 : Telechargement direct
+
+1. Telecharger le ZIP depuis GitHub
+2. Extraire dans un dossier
+3. Double-cliquer sur `build.bat`
+
+### Resultat
+
+Apres le build, vous aurez :
+
+```
+CuryDDOS_v1/
+├── build/
+│   └── Release/
+│       └── CuryDDOS_v1.exe    ← L'executable
+├── src/
+│   ├── main.cpp
+│   ├── gui.cpp
+│   ├── network.cpp
+│   ├── stealth.cpp
+│   ├── scanner.cpp
+│   ├── payloads.cpp
+│   └── ...
+├── CMakeLists.txt
+├── build.bat
+└── CuryDDOS_v1.exe            ← Copie a la racine
+```
+
+---
+
+## 4. Premier lancement
+
+### Important : Executer en admin
+
+CuryDDOS v1 utilise des **raw sockets** qui necessitent des privileges administrateur.
+
+**Methode 1** : Clic droit sur `CuryDDOS_v1.exe` → "Executer en tant qu'administrateur"
+
+**Methode 2** : PowerShell admin
+```powershell
+cd C:\Users\sandr\Downloads\BOTC\CURY
+.\CuryDDOS_v1.exe
+```
+
+### Popup UAC
+
+Windows demandera la confirmation de privileges admin. Cliquer **Oui**.
+
+### Premier ecran
+
+Au demarrage, vous verrez :
+1. La fenetre ImGui avec le theme sombre
+2. Un disclaimer legal a accepter
+3. La barre d'etat avec le statut admin
+
+---
+
+## 5. Interface
+
+### Layout principal
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  🔥 CuryDDOS v1 — [Admin Status]                           │
+├─────────────────────────────────────────────────────────────┤
+│  ┌─── Configuration ───────────────────────────────────┐    │
+│  │ Target IP: [192.168.1.100]  Port: [443]             │    │
+│  │ Duration: [60]s           Intensity: [1.0]x         │    │
+│  │ ☐ Spoof IP           Stealth: [L2 ▼]               │    │
+│  └─────────────────────────────────────────────────────┘    │
+├─────────────────────────────────────────────────────────────┤
+│  ┌─── Attack Modes ────────────────────────────────────┐    │
+│  │ ☐ SYN Flood      ☐ UDP Flood       ☐ ICMP Flood    │    │
+│  │ ☐ DNS Amplif.    ☐ NTP Amplif.     ☐ SSDP Amplif.  │    │
+│  │ ☐ Memcached      ☐ Slowloris       ☐ XMAS Flood    │    │
+│  │ ... (28 modes au total)                              │    │
+│  │                                                      │    │
+│  │ [Right-click sur un mode = popup info]               │    │
+│  └─────────────────────────────────────────────────────┘    │
+├─────────────────────────────────────────────────────────────┤
+│  ┌─── Payload Builder ─────────────────────────────────┐    │
+│  │ Type: [Stealer ▼]  Dest: [Discord ▼]               │    │
+│  │ [Quick Presets] [Generate] [Compile]                │    │
+│  └─────────────────────────────────────────────────────┘    │
+├─────────────────────────────────────────────────────────────┤
+│  [🟢 LAUNCH ATTACK]        [🔴 KILL SWITCH]                │
+├─────────────────────────────────────────────────────────────┤
+│  ████████████████████░░░░░░░░░░░░ 67%                      │
+│  Bandwidth: 1.2 Gbps  |  Packets: 1.2M  |  Time: 45s      │
+├─────────────────────────────────────────────────────────────┤
+│  [Logs]                                                     │
+│  > [CuryDDOS] Target: 192.168.xxx.xxx:443                  │
+│  > [CuryDDOS] SYN Flood started                            │
+│  > [CuryDDOS] Bandwidth: 1.2 Gbps                          │
+│  > [CuryDDOS] Packets sent: 1,234,567                      │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Zones principales
+
+| Zone | Description |
+|---|---|
+| **Configuration** | IP cible, port, duree, intensite, stealth |
+| **Attack Modes** | Selection des 28 modes d'attaque |
+| **Payload Builder** | Generation de payloads compiles |
+| **Controls** | Boutons lancer/arreter |
+| **Progress** | Barre de progression + stats |
+| **Logs** | Journal en temps reel |
+
+---
+
+## 6. Configuration de l'attaque
+
+### Step 1 : Target IP
+
+Entrer l'adresse IP de la cible :
+```
+192.168.1.100
+```
+
+> ⚠️ **IMPORTANT** : Utilisez UNIQUEMENT des IPs de votre propre reseau !
+
+### Step 2 : Port
+
+Port cible (selon le service) :
+- **80** : HTTP
+- **443** : HTTPS
+- **22** : SSH
+- **53** : DNS
+- **8080** : HTTP alternatif
+
+### Step 3 : Duree
+
+Duree de l'attaque en secondes :
+- **30** : Test rapide
+- **60** : Test standard
+- **300** : Test de charge long
+
+### Step 4 : Intensite
+
+Multiplicateur de vitesse :
+- **0.5** : Lent (stealth)
+- **1.0** : Normal
+- **2.0** : Rapide
+- **5.0** : Aggressif
+
+### Step 5 : Stealth
+
+Niveau de discretion :
+- **L0** : Pas de stealth (maximum perf)
+- **L1** : Delais + TTL variable
+- **L2** : + IP spoofing + fragmentation
+- **L3** : Rotation profils + delays adaptatifs
+
+### Step 6 : IP Spoofing
+
+Optionnel. Masque votre IP reelle en envoyant des paquets avec des IPs source aleatoires.
+
+> ⚠️ Necessite L2 ou L3 pour etre efficace
+
+---
+
+## 7. Les 28 modes d'attaque
+
+### 🏴 TCP Flag Floods
+
+| Mode | Description | Detection | Efficacite |
+|---|---|---|---|
+| **SYN Flood** | Inonde de paquets SYN sans completer le handshake | Moyenne | ⭐⭐⭐⭐⭐ |
+| **RST Flood** | Envoie des RST pour fermer les connexions | Haute | ⭐⭐⭐ |
+| **ACK Flood** | Envoie des ACK pour saturer le firewall | Moyenne | ⭐⭐⭐⭐ |
+| **FIN Flood** | Envoie des FIN pour fermer les connexions | Haute | ⭐⭐⭐ |
+| **PUSH+ACK** | Envoie des donnees avec PUSH+ACK | Basse | ⭐⭐⭐⭐ |
+| **XMAS Flood** | Flags FIN+PSH+URG ensemble | Haute | ⭐⭐⭐ |
+| **NULL Flood** | Aucun flag TCP (null scan) | Haute | ⭐⭐ |
+
+### 🌊 L4 Floods
+
+| Mode | Description | Detection | Efficacite |
+|---|---|---|---|
+| **UDP Flood** | Envoie d'UDP sur un port | Basse | ⭐⭐⭐⭐⭐ |
+| **ICMP Flood** | Ping de mort (ping flood) | Basse | ⭐⭐⭐⭐ |
+| **QUIC Flood** | Flood sur UDP 443 (QUIC) | Basse | ⭐⭐⭐⭐ |
+| **SIP Flood** | Flood sur protocole VoIP (5060) | Basse | ⭐⭐⭐ |
+| **GRE Flood** | Tunnel GRE flood | Moyenne | ⭐⭐⭐⭐ |
+
+### ⚡ Amplification x10k
+
+| Mode | Amplification | Port |
+|---|---|---|
+| **DNS** | x50 | 53 |
+| **NTP** | x500 | 123 |
+| **SSDP** | x30 | 1900 |
+| **Memcached** | x50000 | 11211 |
+| **Chargen** | x350 | 19 |
+| **SNMP** | x600 | 161 |
+| **NetBIOS** | x30 | 137 |
+| **mDNS** | x10 | 5353 |
+| **WS-Discovery** | x50 | 3702 |
+| **CoAP** | x10 | 5683 |
+
+### 🐌 L7
+
+| Mode | Description | Detection |
+|---|---|---|
+| **Slowloris** | Connessions lentes qui maintiennent les slots ouverts | Basse |
+
+### 💀 Exhaustion
+
+| Mode | Description | Detection |
+|---|---|---|
+| **DHCP Starvation** | Epuise les baux DHCP | Moyenne |
+| **IGMP Flood** | Flood de requetes IGMP | Basse |
+
+### Right-click pour plus d'infos
+
+Sur chaque mode, faites un **clic droit** pour voir :
+- 📝 Description detaillee
+- 🎯 Effet sur la cible
+- 🔍 Risque de detection
+- ✅ Taux de reussite
+- 📋 Meilleur usage
+- 🔧 Protocole utilise
+
+---
+
+## 8. Stealth System
+
+### Niveaux
+
+| Niveau | Techniques | Usage |
+|---|---|---|
+| **L0** | Aucun | Tests internes, debug |
+| **L1** | Delais aleatoires, TTL variable | Tests moderes |
+| **L2** | + IP spoofing, fragmentation | Tests discrets |
+| **L3** | + Rotation profils, delays adaptatifs | Maximum discretion |
+
+### Rotation de profils
+
+Le systeme genere automatiquement de nouveaux profils :
+- Chaque profil a un **ID unique**
+- Les profils changent periodiquement
+- Les paquets sont fragmentses aleatoirement
+- Les TTL sont varies
+- Les IPs source sont generees aleatoirement
+
+### Configuration
+
+```cpp
+// Profil actif
+StealthProfile current;
+current.id = uuid;           // UUID unique
+current.source_ips = {...};  // IPs source generees
+current.fragment_size = 8;   // Taille de fragmentation
+current.delay_min = 1;       // Delai minimum (ms)
+current.delay_max = 50;      // Delai maximum (ms)
+current.ttl_min = 32;        // TTL minimum
+current.ttl_max = 128;       // TTL maximum
+current.spoof_probability = 0.8; // 80% de spoofing
+```
+
+---
+
+## 9. Port Scanner
+
+### Types de scan
+
+| Type | Description | Vitesse |
+|---|---|---|
+| **SYN Scan** | Scan semi-ouvert (stealth) | ⭐⭐⭐⭐⭐ |
+| **Full Scan** | Scan complet 1-65535 | ⭐⭐ |
+
+### Utilisation
+
+1. Cliquer sur **"Scan Target"** dans l'interface
+2. Entrer l'IP a scanner
+3. Les resultats s'affichent dans un popup
+
+### Resultats
+
+Le scanner detecte :
+- **Ports ouverts**
+- **Services** (HTTP, SSH, FTP, etc.)
+- **Bannieres** de service
+- **OS fingerprint** (Windows, Linux, etc.)
+
+### Utilite
+
+- Trouver les ports ouverts avant une attaque
+- Identifier les services actifs
+- Selectionner le meilleur port cible
+- Detecter l'OS pour adapter l'attaque
+
+---
+
+## 10. Payload Builder
+
+### Types de payloads
+
+| Type | Description | Exfiltration |
+|---|---|---|
+| 🔑 **Stealer** | Vole navigateurs, Discord, wallets | Discord Webhook |
+| ⌨️ **Keylogger** | Enregistre frappes clavier | Discord Webhook |
+| 📸 **Spyware** | Screenshots periodiques | Discord Webhook |
+| 🔐 **Ransomware** | Chiffrement XOR + cle exfil | HTTP POST |
+| 🪱 **Worm** | Propagation SMB + autorun | HTTP POST |
+| 🛡️ **Stealth** | Toutes techniques combinees | Discord Webhook |
+
+### Processus de generation
+
+1. **Selectionner le type** de payload
+2. **Configurer l'upload** (Discord webhook, FTP, HTTP)
+3. **Cliquer "Generate"** → genere le code source C++
+4. **Cliquer "Compile"** → compile avec MSVC
+5. **Resultat** → `payload.exe` + `payload_source.cpp`
+
+### Options avancees
+
+- **Output folder** : dossier de destination
+- **Custom name** : nom de l'executable
+- **Source code** : code genere consultable
+- **Recompilation** : recompile a tout moment
+
+### Compilation
+
+Le compilateur utilise :
+```
+cl.exe /EHsc /O2 /MT /std:c++17
+```
+- `/EHsc` : Gestion des exceptions
+- `/O2` : Optimisation vitesse
+- `/MT` : Runtime statique (pas de DLL externe)
+- `/std:c++17` : Standard C++17
+
+---
+
+## 11. Quick Presets
+
+### Presets disponibles
+
+| Preset | Type | Destination |
+|---|---|---|
+| **STEALER + DISCORD** | Stealer | Discord Webhook |
+| **STEALER + HTTP** | Stealer | HTTP POST |
+| **KEYLOGGER + DISCORD** | Keylogger | Discord Webhook |
+| **KEYLOGGER + HTTP** | Keylogger | HTTP POST |
+| **SPYWARE + DISCORD** | Spyware | Discord Webhook |
+| **WORM + HTTP** | Worm | HTTP POST |
+| **RANSOMWARE + HTTP** | Ransomware | HTTP POST |
+| **ALL STEALTH** | Combine | Discord |
+
+### Utilisation
+
+1. Cliquer sur un **preset**
+2. Le formulaire se remplit automatiquement
+3. Coller votre **webhook URL** ou **IP callback**
+4. Cliquer **Generate**
+
+---
+
+## 12. Kill Switch
+
+### Description
+
+Le Kill Switch est un bouton d'arret d'urgence qui :
+- **Arrete immediatement** toutes les operations
+- **Ferme** tous les sockets
+- **Termine** tous les threads
+- **Affiche** un message d'alerte
+
+### Utilisation
+
+En cas de probleme, cliquez immediatement sur **🔴 KILL SWITCH**.
+
+Le systeme :
+1. Definit `active = false`
+2. Libere les resources
+3. Affiche "[CuryDDOS] KILL SWITCH — All operations terminated"
+
+---
+
+## 13. Infiltration Guide
+
+### Sections
+
+L'outil contient un guide complet en 10 sections :
+
+1. **TCP Flag Attacks** — 7 vecteurs
+2. **L4 Floods** — 5 vecteurs
+3. **Amplification** — 10 vecteurs x10k
+4. **L7 Attacks** — Slowloris
+5. **Exhaustion** — DHCP, IGMP
+6. **Stealth Techniques** — Profils, rotation
+7. **Payload Delivery** — SMB, HTTP
+8. **Social Engineering** — Phishing, pretexting
+9. **Physical Access** — USB drops, rogue AP
+10. **Post-Exploitation** — Persistence, lateral movement
+
+### Acces
+
+Menu → **CuryDDOS** → **Infiltration Guide**
+
+---
+
+## 14. Report Generator
+
+### Fonctionnalite
+
+Genere un rapport d'attaque complet et l'uploade vers file.io pour partage anonyme.
+
+### Contenu du rapport
+
+```
+=== CURY DDOS v1.0 — ATTACK REPORT ===
+  Date: [timestamp]
+  Target: [ip_masked]
+  Port: [port]
+  Duration: [duration]s
+  Intensity: [intensity]x
+  Stealth: L[level]
+  Spoof: [yes/no]
+  Modes: [list]
+  Payload: [type]
+  Status: [completed/stopped]
+=== DISCLAIMER ===
+  The user of this tool is SOLELY RESPONSIBLE for all actions.
+========================================
+```
+
+### Utilisation
+
+1. Cliquer **"Generate Report"**
+2. Le rapport est genere automatiquement
+3. Upload vers **file.io** (anonyme)
+4. Lien copie dans le presse-papiers
+5. Partageable via Discord, Telegram, etc.
+
+---
+
+## 15. Raccourcis clavier
+
+| Raccourci | Action |
+|---|---|
+| **F5** | Lancer l'attaque |
+| **F6** | Arreter l'attaque |
+| **F7** | Kill Switch |
+| **Ctrl+S** | Sauvegarder config |
+| **Ctrl+L** | Clear logs |
+
+---
+
+## 16. FAQ
+
+### Q : Est-ce legal ?
+
+**R** : Uniquement sur votre propre infrastructure ou avec autorisation ecrite du proprietaire.
+
+### Q : Combien de bandwith ?
+
+**R** : Depends de votre connexion et du mode. Exemple : SYN flood sur 1 Gbps peut atteindre 800 Mbps.
+
+### Q : Le scanner detecte quoi ?
+
+**R** : Ports ouverts, services, bannieres, OS fingerprint.
+
+### Q : Les payloads fonctionnent ?
+
+**R** : Oui, si MSVC est installe. Le compilateur genere un .exe autonome.
+
+### Q : Comment eviter la detection ?
+
+**R** : Utilisez L3 stealth, IP spoofing, et des delays eleves.
+
+### Q : Npcap est necessaire ?
+
+**R** : Non. Sans Npcap, ARP spoofing est desactive mais les autres attaques fonctionnent.
+
+### Q : Supporte les VMs ?
+
+**R** : Oui. Testez dans des VMs isolated (VirtualBox, VMware).
+
+---
+
+## 17. Resolution de problemes
+
+### Erreur : "Failed to initialize raw sockets"
+
+**Cause** : Pas admin ou anti-virus bloque.
+
+**Solution** :
+1. Executer en tant qu'admin
+2. Ajouter une exclusion dans l'anti-virus
+3. Desactiver temporairement la protection en temps reel
+
+### Erreur : "Compilation failed"
+
+**Cause** : MSVC pas instale ou pas dans le PATH.
+
+**Solution** :
+1. Installer Visual Studio avec "Desktop development with C++"
+2. Verifier que `cl.exe` est accessible
+3. Redemarrer le terminal
+
+### Erreur : "Connection refused"
+
+**Cause** : Firewall bloque ou port ferme.
+
+**Solution** :
+1. Verifier le firewall
+2. Changer de port
+3. Utiliser un port ouvert (80, 443)
+
+### Erreur : "Anti-virus detected"
+
+**Cause** : Le tool est detecte comme malware.
+
+**Solution** :
+1. Ajouter une exclusion dans l'anti-virus
+2. Desactiver la protection en temps reel
+3. Compiler soi-meme depuis les sources
+
+### Interface floue
+
+**Cause** : DPI scaling non active.
+
+**Solution** :
+1. Le tool supporte le DPI awareness
+2. Redemarrer l'application
+3. Verifier les parametres Windows
+
+### Pas de bandwidth
+
+**Cause** : Connexion lente ou intensite trop faible.
+
+**Solution** :
+1. Augmenter l'intensite
+2. Changer de mode
+3. Verifier votre connexion
+
+---
+
+## 🎓 Conclusions
+
+CuryDDOS v1 est un outil puissant pour le **test de securite reseau**. Utilisez-le de maniere **responsable** et **legale**.
+
+### Points cles
+
+- ✅ **28 attaques** differentes
+- ✅ **Stealth system** avance
+- ✅ **Payload builder** compiles
+- ✅ **Interface** moderne
+- ✅ **Admin** automatique
+- ✅ **Kill Switch** d'urgence
+- ✅ **Guide** complet
+
+### Rappel legal
+
+> **Utilisez cet outil uniquement sur vos propres machines et reseaux.**
+> **L'utilisation non autorisee est illégale et punissable par la loi.**
+
+---
+
+<p align="center">
+  <b>🔥 CuryDDOS v1 — Tuteuriel Complet 🔥</b><br>
+  <sub>Genere automatiquement — 2026</sub>
+</p>
