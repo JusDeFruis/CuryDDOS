@@ -220,5 +220,5 @@ Cet outil doit etre utilise uniquement dans le cadre :
 
 <p align="center">
   <b>🔥 CuryDDOS v1 — Built with passion 🔥</b><br>
-  <sub>Made by <a href="https://github.com/stilldry">stilldry</a> — 2026</sub>
+  <sub>Made by <a href="https://github.com/JusDeFruis">stilldry</a> — 2026</sub>
 </p>
