@@ -24,7 +24,7 @@
 
 
 ---
-**Website : https://curyddos.base44.app/
+Website : https://curyddos.base44.app/
 ---
 
 ## 🎯 Presentation
